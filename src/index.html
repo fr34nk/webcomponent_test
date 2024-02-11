@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>element-details - web component using &lt;template&gt; and &lt;slot&gt;</title>
+    <style>
+      dl { margin-left: 6px; }
+      dt { font-weight: bold; color: #217ac0; font-size: 110% }
+      dt { font-family: Consolas, "Liberation Mono", Courier }
+      dd { margin-left: 16px }
+    </style>
+
+    <link src="../../vendors/bootstrap/dist/js/bootstrap.bundle.min.js"/>
+    <link href="../../vendors/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+
+     <script type="text/javascript" src="./utils/utils.js"></script>
+     <script type="text/javascript" src="./utils/storageProxyObject.js"></script>
+     <script type="text/javascript" src="./utils/storageProxy.js"></script>
+     <script type="text/javascript" src="./services/localStorage.js"></script>
+     <script type="text/javascript" src="./services/eventBus.js"></script>
+
+     <script type="text/javascript" src="./components/events/todolistEvents.js"></script>
+     <script type="text/javascript" src="./components/editable-item/editable-item.wbc.js"></script>
+     <script type="text/javascript" src="./components/todo-list/todo-list.wbc.js"></script>
+
+  </head>
+  <body>
+
+      <div class="bs-gray-100 d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center" >
+        <editable-item
+          header="Selected Task"
+          description=""
+        >
+        </editable-item>
+      </div>
+
+      <div class="bs-gray-100 d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center" >
+        <todo-list
+            title="Add item task:"
+            listItem="This will not appear"
+        >
+        </todo-list>
+      </div>
+
+    </div>
+  </body>
+
+
+</html>

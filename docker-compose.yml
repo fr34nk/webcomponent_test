@@ -1,0 +1,12 @@
+version: "3"
+services:
+    webserver:
+        container_name: webserver
+        image: nginx:1.25.3-bookworm
+        ports:
+          - 127.0.0.1:8000:80
+        volumes:
+            - ./src:/usr/share/nginx/html
+            - type: bind
+              source: ./nginx.conf              
+              target: /etc/nginx/nginx.conf

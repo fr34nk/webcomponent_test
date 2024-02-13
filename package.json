@@ -17,11 +17,18 @@
     "webpack-dev-server": "^5.0.0"
   },
   "scripts": {
+    "mock:api": "npx json-server -h 127.0.0.1 -p 8082 src/mock/api/db.json",
     "dev": "webpack serve -w",
     "dev:local": "webpack serve -w --host 127.0.0.1 --port 8080",
     "build:watch": "webpack -w --mode=production",
     "dev:server:build": "npm run build:watch",
     "dev:server:serve": "docker-compose up",
     "build": "webpack --mode=production"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "json": "^11.0.0",
+    "json-server": "^1.0.0-alpha.23",
+    "nodemon": "^3.0.3"
   }
 }

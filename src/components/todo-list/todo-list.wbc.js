@@ -1,28 +1,24 @@
-const RESET_LIST_ITEMS=true;
+const RESET_LIST_ITEMS=false;
 
 import { getEventBus } from '../../services/eventBus'
 import { getStorage } from '../../services/storageService'
+import { getTodoListService } from '../../services/todoListService';
 import { getDateFormat } from '../../utils/utils';
-import { 
-  EnumItemEvent,
-  EnumItemEventUpdate,
-  EnumNodeUpdateType
-} from '../../interfaces/todolistEvents'
 
 const COMPONENT_NAME = 'todo-list'
 
 function defineTodoList (template) {
   if (!customElements.get(COMPONENT_NAME)) {
 
-    class EditableList extends HTMLElement {
+    class TodoList extends HTMLElement {
       constructor() {
-        // establish prototype chain
         super();
         this.eventBus = getEventBus();
         this.storage = getStorage();
+        this.apiService = getTodoListService();
         
         if (RESET_LIST_ITEMS) {
-          this.storeInitializeItems();
+          this.getTasksFromStore();
         }
 
         // attaches shadow tree and returns shadow root reference
@@ -31,23 +27,21 @@ function defineTodoList (template) {
 
         const editableListContainer = document.createElement('div');
 
-        // get attribute values from getters from component attributes
         const title = this.title;
         const addItemText = this.addItemText;
         const listItems = [];
 
-        // adding a class to our container for the sake of clarity
         editableListContainer.classList.add('editable-list');
         editableListContainer.innerHTML = this.htmlBuildContainer(listItems)
 
-        this.addListItem = this.addListItem.bind(this);
+        this.addListItem = this.addTaskItem.bind(this);
 
-        // appending the container to the shadow DOM
-        // get list container in shadow
         shadow.appendChild(editableListContainer);
       }
 
-      storeInitializeItems () {
+      async getLists (listId) { }
+
+      getTasksFromStore () {
         this.storage.removeItem('todo_list');
         this.storage.addItem('todo_list', [{
             id: 0,
@@ -71,24 +65,19 @@ function defineTodoList (template) {
           checked: true,
           insertDate: getDateFormat(new Date()).Date_Time_Period
         })
-
+        return this.storage.getItem('todo_list');
       }
 
       htmlBuildContainer (listItems) {
         return `
           <link href="../../vendors/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
           <style>
-            :root {
-              --bs-primary: #ff0000;
-              --bs-primary-rgb: 250, 110, 253;
-            }
             li, div > div {
               display: flex;
               align-items: center;
               justify-content: space-between;
             }
             .icon {
-              background-color: #fff;
               border: none;
               cursor: pointer;
               float: right;
@@ -124,8 +113,8 @@ function defineTodoList (template) {
                   </div>
                   -->
 
-                  <div class="btn w-100 px-4">
-                    <button class="w-100 flex-fill editable-list-add-item btn icon btn-primary btn-md px-4 gap-3">+</button>
+                  <div class="w-100 px-4">
+                    <button class="btn-primary btn-md w-100 flex-fill editable-list-add-item btn icon px-4 gap-3">+</button>
                   </div>
 
                 </div>
@@ -145,136 +134,25 @@ function defineTodoList (template) {
         `;
       }
 
-      htmlBuildRemoveButton (item, { onClick }) {
-        const buttonContainer = document.createElement('div')
-        buttonContainer.classList.add('button-container')
-        const button = document.createElement('button');
-        buttonContainer.appendChild(button)
+      renderTask (item) {
+        const _this = this;
+        const task = document.createElement('task-item')
 
-        button.classList.add('editable-list-remove-item', 'btn', 'btn-primary', 'btn-md',  'gap-3', 'py-0', 'icon');
-        button.style = 'background-color: var(--bs-gray-200); transition: background 0s ease 0s !important; onblur { background-color: var(--bs-primary); }'
-        button.innerHTML = '-';
-
-        const classSelf = this; 
-        button.addEventListener('click', function (e) {
-          onClick.bind(this)('item_root')
-        });
-        return buttonContainer;
-      }
-
-      htmlBuildCheckBox (itemState, { onClick }) {
-        const { checked } = itemState;
-
-        const checkboxContainer = document.createElement('div');
-        checkboxContainer.classList.add('checkbox-container')
-
-        const checkbox = document.createElement('input')
-        checkbox.classList.add('form-check-input', 'flex-shrink-0')
-        checkbox.setAttribute('type', 'checkbox')
-        if (checked) {
-          checkbox.setAttribute('checked',  checked);
-        } else {
-          checkbox.removeAttribute('checked');
+        task.onTaskRemove = function (item) {
+          task.remove()
         }
 
-        checkbox.style = `font-size: 1.375em`;
+        task.onTaskFinish = (function (item) {
+          console.log("finish: ", item)
+          task.replaceWith(_this.renderTask({ ...item, checked: !item.checked }))
+        }).bind(this, item)
 
-        checkbox.addEventListener('click', function (e) {
-          onClick.bind(this)(itemState)
-        })
+        task.header = item.header;
+        task.description = item.description;
+        task.insertDate = item.insertDate;
+        task.isChecked = item.checked;
 
-        checkboxContainer.appendChild(checkbox);
-        return checkboxContainer;
-      }
-
-      htmlBuildInfoSection ({ id, header, description, checked, insertDate }, { style }) {
-        const infoContainer = document.createElement('div');
-        infoContainer.classList.add('px-4');
-
-        const itemHtmlContent = `
-              <span class="pt-1 form-checked-content ${checked == true ? 'text-decoration-line-through' : ''}" 
-                style="opacity: ${ checked ? '70%' : '100%' };"
-              >
-                <strong>${header}</strong>
-                <small class="d-block text-body-secondary">
-                  <p>${description}</p>
-                </small>
-                <small class="d-block text-body-secondary">
-                  <svg class="bi me-1" width="1em" height="1em"><use xlink:href="#calendar-event"></use></svg>
-                  ${insertDate}
-                </small>
-              </span>
-        `
-
-        infoContainer.innerHTML = itemHtmlContent;
-        return infoContainer;
-      }
-
-      renderItem (item) {
-        const label = document.createElement('label');
-        label.classList.add('list-group-item', 'list-group', 'hstack')
-        label.style = 'border-top-width: 1px;'
-
-        const checkbox = this.htmlBuildCheckBox(item, {
-          onClick: this.onItemCheck
-        })
-        label.appendChild(checkbox)
-
-        const infoSection = this.htmlBuildInfoSection(item, { });
-        label.appendChild(infoSection);
-
-        const button = this.htmlBuildRemoveButton(item, {
-          onClick: this.onItemRemove
-        });
-        label.appendChild(button);
-        return label;
-      }
-
-      // == Item List Events ==
-      onItemCheck (itemState) {
-        this.dispatchEvent(new CustomEvent(EnumItemEvent.ITEM_UPDATE, {
-          detail: {
-            type: EnumItemEventUpdate.NODE_UPDATE,
-            subtype: EnumNodeUpdateType.TOGGLE_FINISH,
-            item: itemState
-          },
-          bubbles: true
-        }), )
-      }
-
-      onItemRemove (node_to_remove) {
-        this.dispatchEvent(new CustomEvent(EnumItemEvent.ITEM_UPDATE, {
-          detail: {
-            type: EnumItemEventUpdate.NODE_REMOVAL,
-            node: node_to_remove,
-          },
-          bubbles: true
-        })) 
-      }
-
-      buildItem (itemState) {
-        let renderedItem = this.renderItem(itemState, {})
-        renderedItem.addEventListener(EnumItemEvent.ITEM_UPDATE, (e) => {
-          switch (e.detail.type) {
-            case EnumItemEventUpdate.NODE_REMOVAL: {
-              renderedItem.remove()
-              this.notifyChange(EnumItemEventUpdate.NODE_REMOVAL, undefined, itemState);
-              this.storeRemoveItem(itemState)
-            } break;
-            case EnumItemEventUpdate.NODE_UPDATE: {
-              const { type, subtype, item } = e.detail;
-              if (subtype == EnumNodeUpdateType.TOGGLE_FINISH) {
-                const updatedItem = { ...itemState, checked: !item.checked };
-                renderedItem.replaceWith(this.buildItem(updatedItem))
-                this.notifyChange(type, subtype, itemState);
-                this.storeUpdateItem(itemState.id, updatedItem)
-              }
-            } break;
-            default: {
-            }
-          }
-        })
-        return renderedItem;
+        return task;
       }
 
       onHeaderInputChange (callback) {
@@ -314,12 +192,11 @@ function defineTodoList (template) {
         this.storage.setItem('todo_list', newItems);
       }
 
-      addListItem(e) {
+      addTaskItem(e) {
         const headerInput = this.shadowRoot.querySelector('.header-input');
         const descriptionInput = this.shadowRoot.querySelector('.description-input');
         if (headerInput.value) {
 
-          // todo new Item
           const item = {
             id: this.storeGetNewId(),
             header: headerInput.value,
@@ -328,7 +205,7 @@ function defineTodoList (template) {
             insertDate: getDateFormat(new Date()).Date_Time_Period
           }
 
-          this.itemList.appendChild(this.buildItem(item, {}));
+          this.itemList.appendChild(this.renderTask(item, {}));
           this.storeAddItem(item);
 
           window.dispatchEvent(new CustomEvent('add_todo_item', {
@@ -341,24 +218,25 @@ function defineTodoList (template) {
         }
       }
 
-      // fires after the element has been attached to the DOM
-      connectedCallback() {
+      async connectedCallback() {
         this.onHeaderInputChange({})
 
-        // const removeElementButtons = [...this.shadowRoot.querySelectorAll('.editable-list-remove-item')];
         const addElementButton = this.shadowRoot.querySelector('.editable-list-add-item');
 
-        // get items declared in the html
         this.itemList = this.shadowRoot.querySelector('.item-list');
-        // this.addRemoveActionToItems(removeElementButtons);
+
+        let tasks;
+        // let tasks = await this.apiService.getLists(1)
+        if (!tasks) {
+          tasks = this.getTasksFromStore()
+        }
 
         this.storeGetItems().forEach((item) => {
-            this.itemList.appendChild(this.buildItem(item))
+            this.itemList.appendChild(this.renderTask(item))
         })
-        addElementButton.addEventListener('click', this.addListItem, false);
+        addElementButton.addEventListener('click', this.addTaskItem.bind(this), false);
       }
 
-      // gathering data from element attributes
       get title() {
         return this.getAttribute('title') || '';
       }
@@ -370,8 +248,6 @@ function defineTodoList (template) {
       }
 
       storeRemoveItem (item) {
-        console.log('item');
-        console.log(item);
         const itemList = this.storage.getItem('todo_list');
         let newList = [];
         const foundItemIdx = itemList.findIndex((_item) => item.id  == _item.id);
@@ -402,8 +278,7 @@ function defineTodoList (template) {
       }
     }
 
-    // let the browser know about the custom element
-    customElements.define(COMPONENT_NAME, EditableList);
+    customElements.define(COMPONENT_NAME, TodoList);
   }
 }
 

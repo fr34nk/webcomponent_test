@@ -1,5 +1,9 @@
-import { defineHeaderDescription } from "./components/header-description/header-description.wbc.js"
+import './utils/storageProxy.js'
+import './utils/storageProxyObject.js'
+
 import { defineTodoList } from "./components/todo-list/todo-list.wbc.js"
 
-defineHeaderDescription ()
+import { defineTask } from "./components/task/task.wbc.js"
+
+defineTask()
 defineTodoList()

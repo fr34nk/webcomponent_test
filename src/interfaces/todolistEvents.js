@@ -13,3 +13,10 @@ const EnumNodeUpdateType = {
 const EnumNodeRemovalType = {
   ITEM_ROOT: 'ITEM_ROOT',
 }
+
+export {
+  EnumItemEvent,
+  EnumItemEventUpdate,
+  EnumNodeRemovalType,
+  EnumNodeUpdateType
+}

@@ -43,4 +43,11 @@ $RECYCLE.BIN/
 # Local environment variables
 .env
 
+/.idea/
+*.iml
+/node_modules/
+src/vendors
+public/
+
 readme.markdown
+README-2.md

@@ -1,5 +1,3 @@
-console.log("c")
-
 function includeTemplates () {
   var z, i, elmnt, file, xhttp;
   const incEls = document.getElementsByClassName("w3-include-html")  
@@ -96,4 +94,12 @@ function getDateFormat (date=(new Date())) {
     Date_Time: `${_d.year}/${_d.month}/${_d.day} ${_d.hour}:${_d.min}`,
     Date_Time_Period: `${_d.year}/${_d.month}/${_d.day} ${_d.hour}:${_d.min}:${_d.sec} ${_d.period}`,
   }
+}
+
+export {
+  tryJsonParse,
+  tryNumberParse,
+  tryParse,
+  getDateFormat,
+  stringify
 }

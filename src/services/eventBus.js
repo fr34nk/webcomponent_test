@@ -32,3 +32,7 @@ function getEventBus () {
     } 
     return document.eventBus;
 }
+
+export {
+  getEventBus
+}

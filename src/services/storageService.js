@@ -35,3 +35,8 @@ function getStorage () {
     }
     return window._pagestore;
 }
+
+export {
+    getStorage
+}
+

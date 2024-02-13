@@ -38,4 +38,3 @@ Storage.prototype.clear = new Proxy(Storage.prototype.clear || {}, {
         return Reflect.apply(target, thisArg, argumentList);
     },
 });
-

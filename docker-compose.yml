@@ -6,7 +6,7 @@ services:
         ports:
           - 127.0.0.1:8000:80
         volumes:
-            - ./src:/usr/share/nginx/html
+            - ./public:/usr/share/nginx/html
             - type: bind
               source: ./nginx.conf              
               target: /etc/nginx/nginx.conf

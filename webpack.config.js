@@ -17,13 +17,11 @@ module.exports = {
     devServer: {
         static: {
             directory: path.resolve(__dirname, 'public'),
-            
         },
-        allowedHosts: 'auto',
         client: {
             logging: 'info',
         },
-        hot: true, 
+        // hot: true, 
     },
     devtool: 'inline-source-map',
     plugins: [

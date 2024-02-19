@@ -1,3 +1,9 @@
+import uuid from 'uuid';
+
+function genUUID () {
+  return uuid.v4()
+}
+
 function includeTemplates () {
   var z, i, elmnt, file, xhttp;
   const incEls = document.getElementsByClassName("w3-include-html")  
@@ -26,15 +32,15 @@ function includeTemplates () {
   }
 }
 
-function tryNumberParse (v) {
+function tryNumberParse (v: string) {
   const result = Number(v)
-  if (result != NaN) {
+  if (!Number.isNaN(result)) {
     return result
   }
   return null
 }
 
-function tryJsonParse (v) {
+function tryJsonParse (v:string) {
   try {
     return JSON.parse(v);
   } catch (e) {
@@ -42,7 +48,7 @@ function tryJsonParse (v) {
   }
 }
 
-function stringify (value) {
+function stringify (value: string|number|JSON) {
   switch (typeof value) {
       case 'string': {
           return value;
@@ -61,11 +67,11 @@ function stringify (value) {
  * @param {any} value 
  * @returns 
  */
-function tryParse (value) {
-        const json = tryJsonParse(value);
+function tryParse (value: JSON|number|string) {
+        const json = tryJsonParse(value as string);
         if (json) return json;
 
-        const num = tryNumberParse(value);
+        const num = tryNumberParse(value as string);
         if (num) return num;
 
         if (value != null) return value; // expect to be a string
@@ -96,10 +102,30 @@ function getDateFormat (date=(new Date())) {
   }
 }
 
+async function fetchWithTimeout(resource: string, options?: { timeout?: number } & RequestInit) {
+  const defaultTimeout = 2000;
+  
+  const controller = new AbortController();
+  const id = setTimeout(() => {
+    return controller.abort()
+  }, options?.timeout || defaultTimeout);
+
+  const response = await fetch(resource, {
+    ...options,
+    signal: controller.signal  
+  });
+  clearTimeout(id);
+  return response;
+}
+
+
+
 export {
   tryJsonParse,
   tryNumberParse,
   tryParse,
   getDateFormat,
-  stringify
+  stringify,
+  genUUID,
+  fetchWithTimeout
 }

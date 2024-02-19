@@ -1,26 +1,63 @@
-<template id="list-item-template">
-    <style>
-    p.list-item-description {
-        font-family: "Open Sans Light",Helvetica,Arial;
-    }
-    .list-item-name {
-        font-weight: bold; 
-        color: #217ac0; 
-        font-size: 120%}
-
-    h4 { margin: 10px 0 -8px 0; }
-    h4 span { background: #217ac0; padding: 2px 6px 2px 6px }
-    h4 span { border: 1px solid #cee9f9; border-radius: 4px }
-    h4 span { color: white }
-    .attributes { margin-left: 22px; font-size: 90% }
-    .attributes p { margin-left: 16px; font-style: italic }
-    slot[name="msgtext"] { color: green; }
-    </style>
-
-    <h2 class="list-item-name">
-        <slot name="list-item-name">NEED NAME</slot>
-    </h2>
-    <p class="list-item-description">
-        <slot name="list-item-description">NEED DESCRIPTION</slot>
-    </p>
+<template id="template">
+   <link href="../../vendors/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+   <style>
+      li, div > div {
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+      }
+      .icon {
+         border: none;
+         cursor: pointer;
+         float: right;
+         font-size: 1.8rem;
+      }
+   </style>
+   
+   <div class="vstack modal-cotent rounded-4">
+      
+      <div class="modal-content rounded-4 border-1 shadow p-4">
+         
+         <div class="modal-header p-2 pb-4 border-bottom-0">
+            
+            <h3 class="title-wrapper modal-header border-bottom-0 display-6 lh-1 fw-bold">
+               <slot name="title">#TITLE#</slot>
+            </h3>
+         </div>
+         
+         <div class="hstack">
+            <div class="vstack"> 
+               
+               <div class="header-input-container form-floating mb-3">
+                  <input type="email" class="header-input form-control rounded-3" id="floatingInput" placeholder="Lista" style="background-size: auto 24px !important; transition: background 0s ease 0s !important;">
+                  <label for="floatingInput">Lista</label>
+               </div>
+               
+               <div class="form-floating mb-3">
+                  <input class="description-input form-control rounded-3" id="floatingPassword" placeholder="Description" >
+                  <label for="floatingPassword">Tarefa</label>
+               </div>
+               
+               <!--
+                  <div class="form-floating mb-3">
+                     <input form-control type="datetime-local" id="notificationTime" class="notification-time-input form-control rounded-3" placeholder="Notification Time" >
+                     <label for="notificationTime">Notification Time</label>
+                  </div>
+               -->
+               
+               <div class="w-100 px-4">
+                  <button class="btn-primary btn-md w-100 flex-fill editable-list-add-item btn icon px-4 gap-3">+</button>
+               </div>
+               
+            </div>
+         </div>
+      </div>
+      
+      <div class="modal-content rounded-4 ">
+         <div class="row"> 
+            <div class="item-list-container d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center">
+            </div>
+         </div>
+      </div> 
+   </div>
 </template>

@@ -2,8 +2,8 @@
 
 ## What it uses
 
-  - Bootstrap
-  - Web Components
+ - Bootstrap
+ - Web Components
 
 ## How to run
 

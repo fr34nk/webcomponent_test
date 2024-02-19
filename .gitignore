@@ -48,6 +48,7 @@ $RECYCLE.BIN/
 /node_modules/
 src/vendors
 public/
+dist/
 
 readme.markdown
 README-2.md

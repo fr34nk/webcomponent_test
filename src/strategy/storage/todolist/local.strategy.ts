@@ -29,12 +29,8 @@ class TodoLocalStorageStrategy implements StorageStrategyInterface {
     }
 
     async addList (list: List|ListPropose): Promise<List> {
-        console.log('list_');
-        console.log(list);
         return new Promise(async (res, rej) => {
             const addedList = await this._addItem<List>(LOCAL_STORAGE_LISTS_KEY, list);
-            console.log('addedList');
-            console.log(addedList);
             res(addedList)
         })
     }

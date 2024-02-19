@@ -57,7 +57,10 @@ class DataSource {
         if (this.datasource.lists.findIndex(list => list.id == listId) == -1) {
             throw new Error('Could not add task because theres no list with this id: ', listId)
         }
-        this.datasource.tasks.push({ ...task, listId: listId })
+
+        const newTask = { ...task, listId: listId };
+        this.datasource.tasks.push(newTask);
+        return newTask;
     }
 }
 
@@ -111,8 +114,10 @@ app.get('/lists', (req,res) => {
     const params = req.query;
     res.setHeader('Content-Type', 'application/json')
 
+    // Get all lists if no query
     if (Object.entries(req.query).length == 0) {
         res.status(200)
+        console.log('resturning');
         res.send({
             lists: storage.lists
         })
@@ -205,9 +210,9 @@ app.post('/tasks', (req,res) => {
         return
     }
 
-    storage.addTask(listId, req.body);
+    const addedTask = storage.addTask(listId, req.body);
     res.send({
-        tasks: storage.tasks
+        task: addedTask 
     })
     res.end()
     return;
